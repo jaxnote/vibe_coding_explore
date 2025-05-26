@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognition AI 全面解析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .mindmap-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .mindmap-container h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        .mindmap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 700px;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #f8f9ff 0%, #ffffff 70%);
+            border-radius: 20px;
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 60px;
+            font-size: 2em;
+            font-weight: bold;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            border: 4px solid white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .branch {
+            position: absolute;
+            background: white;
+            border: 3px solid;
+            border-radius: 25px;
+            padding: 20px 25px;
+            min-width: 200px;
+            max-width: 240px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1em;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .branch:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+        }
+
+        .branch-icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .branch-title {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .branch-subtitle {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            font-weight: 400;
+        }
+
+        .branch-1 {
+            border-color: #e74c3c;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+        }
+
+        .branch-1:hover {
+            border-color: #c0392b;
+        }
+
+        .branch-2 {
+            border-color: #3498db;
+            top: 180px;
+            right: 50px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+        }
+
+        .branch-2:hover {
+            border-color: #2980b9;
+        }
+
+        .branch-3 {
+            border-color: #2ecc71;
+            bottom: 180px;
+            right: 50px;
+            background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+        }
+
+        .branch-3:hover {
+            border-color: #27ae60;
+        }
+
+        .branch-4 {
+            border-color: #f39c12;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+        }
+
+        .branch-4:hover {
+            border-color: #e67e22;
+        }
+
+        .branch-5 {
+            border-color: #9b59b6;
+            bottom: 180px;
+            left: 50px;
+            background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+        }
+
+        .branch-5:hover {
+            border-color: #8e44ad;
+        }
+
+        .branch-6 {
+            border-color: #1abc9c;
+            top: 180px;
+            left: 50px;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+        }
+
+        .branch-6:hover {
+            border-color: #16a085;
+        }
+
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(45deg, #bdc3c7, #ecf0f1);
+            z-index: 1;
+            border-radius: 3px;
+            opacity: 0.6;
+        }
+
+        .line-1 {
+            width: 4px;
+            height: 140px;
+            top: 190px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to bottom, #e74c3c, #ecf0f1);
+        }
+
+        .line-2 {
+            width: 140px;
+            height: 4px;
+            top: 50%;
+            right: 190px;
+            transform: translateY(-50%);
+            background: linear-gradient(to right, #ecf0f1, #3498db);
+        }
+
+        .line-3 {
+            width: 140px;
+            height: 4px;
+            bottom: 50%;
+            right: 190px;
+            transform: translateY(50%);
+            background: linear-gradient(to right, #ecf0f1, #2ecc71);
+        }
+
+        .line-4 {
+            width: 4px;
+            height: 140px;
+            bottom: 190px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to top, #f39c12, #ecf0f1);
+        }
+
+        .line-5 {
+            width: 140px;
+            height: 4px;
+            bottom: 50%;
+            left: 190px;
+            transform: translateY(50%);
+            background: linear-gradient(to left, #ecf0f1, #9b59b6);
+        }
+
+        .line-6 {
+            width: 140px;
+            height: 4px;
+            top: 50%;
+            left: 190px;
+            transform: translateY(-50%);
+            background: linear-gradient(to left, #ecf0f1, #1abc9c);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 20px 50px rgba(102, 126, 234, 0.6);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        .central-node:hover {
+            animation: pulse 2s infinite;
+        }
+
+        .branch {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .branch:nth-child(odd) {
+            animation-delay: -2s;
+        }
+
+        .branch:nth-child(even) {
+            animation-delay: -4s;
+        }
+
+        @media (max-width: 768px) {
+            .mindmap {
+                min-height: 600px;
+                transform: scale(0.7);
+            }
+
+            .branch {
+                min-width: 160px;
+                max-width: 180px;
+                padding: 15px 20px;
+                font-size: 0.9em;
+            }
+
+            .central-node {
+                padding: 25px 30px;
+                font-size: 1.6em;
+            }
+
+            .branch-icon {
+                font-size: 1.5em;
+            }
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border-left: 5px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .comparison-table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .pros {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .cons {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .highlight h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+
+        .link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .timeline-item {
+            border-left: 3px solid #667eea;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .timeline-date {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Cognition AI</h1>
+            <p>全球首个AI软件工程师全面解析</p>
+        </div>
+
+        <!-- 思维导图 -->
+        <div class="mindmap-container">
+            <h2>Cognition AI 核心生态思维导图</h2>
+            <div class="mindmap">
+                <!-- 连接线 -->
+                <div class="connection-line line-1"></div>
+                <div class="connection-line line-2"></div>
+                <div class="connection-line line-3"></div>
+                <div class="connection-line line-4"></div>
+                <div class="connection-line line-5"></div>
+                <div class="connection-line line-6"></div>
+
+                <!-- 中心节点 -->
+                <div class="central-node">
+                    Cognition AI<br>
+                    <span style="font-size: 0.6em;">全球首个AI软件工程师</span>
+                </div>
+
+                <!-- 分支节点 -->
+                <div class="branch branch-1">
+                    <span class="branch-icon">🏢</span>
+                    <div class="branch-title">Cognition AI</div>
+                    <div class="branch-subtitle">20亿美金独角兽</div>
+                </div>
+
+                <div class="branch branch-2">
+                    <span class="branch-icon">🚀</span>
+                    <div class="branch-title">产品矩阵</div>
+                    <div class="branch-subtitle">Devin/DeepWiki/Kevin</div>
+                </div>
+
+                <div class="branch branch-3">
+                    <span class="branch-icon">⚡</span>
+                    <div class="branch-title">核心功能</div>
+                    <div class="branch-subtitle">自主编程/调试/部署</div>
+                </div>
+
+                <div class="branch branch-4">
+                    <span class="branch-icon">📅</span>
+                    <div class="branch-title">发展时间线</div>
+                    <div class="branch-subtitle">2024-2025里程碑</div>
+                </div>
+
+                <div class="branch branch-5">
+                    <span class="branch-icon">🔄</span>
+                    <div class="branch-title">竞品对比</div>
+                    <div class="branch-subtitle">vs Windsurf/Cursor</div>
+                </div>
+
+                <div class="branch branch-6">
+                    <span class="branch-icon">🌟</span>
+                    <div class="branch-title">开源生态</div>
+                    <div class="branch-subtitle">OpenDeepWiki/社区</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Cognition AI 公司介绍 -->
+        <div class="content-section">
+            <h2 class="section-title">🏢 Cognition AI 公司</h2>
+
+            <div class="highlight">
+                <h3>🎯 公司概况</h3>
+                <p><strong>Cognition AI</strong> 是一家知名AI创业公司，以发布"全球首个AI软件工程师"Devin而闻名。成立仅6个月就达到20亿美金估值，成为AI领域的独角兽企业。</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>👨‍💼 核心团队</h3>
+                    <ul>
+                        <li><strong>CEO Scott Wu</strong>：28岁华裔天才</li>
+                        <li>连续3年IOI金牌获得者（2012-2014）</li>
+                        <li>团队拥有<span class="tag">10枚IOI金牌</span></li>
+                        <li>丰富的AI前沿工作经验</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 融资情况</h3>
+                    <ul>
+                        <li>A轮融资：<span class="tag">2100万美元</span></li>
+                        <li>领投方：Peter Thiel的Founders Fund</li>
+                        <li>估值：<span class="tag">20亿美金</span></li>
+                        <li>成立时间：仅6个月达成独角兽</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 团队背景</h3>
+                    <ul>
+                        <li>Cursor、Scale AI 前员工</li>
+                        <li>Google DeepMind 专家</li>
+                        <li>Waymo、Nuro 自动驾驶经验</li>
+                        <li>Modal、Lunchclub 创业经历</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 产品矩阵 -->
+        <div class="content-section">
+            <h2 class="section-title">🚀 产品矩阵</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🤖 Devin AI</h3>
+                    <span class="tag">核心产品</span>
+                    <span class="tag">$20/月起</span>
+                    <ul>
+                        <li>官网：<a href="https://devin.ai" class="link">devin.ai</a></li>
+                        <li>付费版：<a href="https://app.devin.ai" class="link">app.devin.ai</a></li>
+                        <li>计费单位：Agent Compute Units (ACUs)</li>
+                        <li>全自主AI软件工程师</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📚 DeepWiki</h3>
+                    <span class="tag">免费使用</span>
+                    <span class="tag">代码分析</span>
+                    <ul>
+                        <li>在线地址：<a href="https://deepwiki.com" class="link">deepwiki.com</a></li>
+                        <li>代码框架分析工具</li>
+                        <li>功能特性解析</li>
+                        <li>支持5万+GitHub项目</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔧 Kevin-32B</h3>
+                    <span class="tag">开源模型</span>
+                    <span class="tag">强化学习</span>
+                    <ul>
+                        <li>CUDA内核编写专用模型</li>
+                        <li>2025年5月6日开源</li>
+                        <li>基于强化学习训练</li>
+                        <li>专业GPU编程助手</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>🔌 集成方式</h3>
+                <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em;">💬</div>
+                        <strong>Slack集成</strong><br>
+                        聊天指令分配任务
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em;">💻</div>
+                        <strong>VSCode插件</strong><br>
+                        IDE直接管理代码
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em;">🔗</div>
+                        <strong>API接口</strong><br>
+                        定制化工作流程
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 核心功能 -->
+        <div class="content-section">
+            <h2 class="section-title">⚡ 核心功能</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🧠 自主学习能力</h3>
+                    <ul>
+                        <li>通过阅读文档学习新技术</li>
+                        <li>自动扩展技能集</li>
+                        <li>理解复杂技术栈</li>
+                        <li>持续自我优化</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🏗️ 端到端开发</h3>
+                    <ul>
+                        <li>前端设计到后端部署</li>
+                        <li>从零构建完整项目</li>
+                        <li>网站、游戏、软件开发</li>
+                        <li>应用程序发布上线</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🐛 智能调试</h3>
+                    <ul>
+                        <li>自主查找并修复Bug</li>
+                        <li>发现隐藏问题</li>
+                        <li>代码质量优化</li>
+                        <li>性能瓶颈分析</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🤖 AI模型训练</h3>
+                    <ul>
+                        <li>训练和微调AI模型</li>
+                        <li>深度学习应用</li>
+                        <li>模型优化调参</li>
+                        <li>AI领域深度应用</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>📊 性能表现</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">13.86%</div>
+                        <div class="stat-label">SWE-bench正确率</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1.96%</div>
+                        <div class="stat-label">之前技术水平</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">7x</div>
+                        <div class="stat-label">性能提升倍数</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px;">在SWE-bench基准测试中，Devin的表现远超GPT-4和Claude 2等知名AI模型，展现出在理解和解决实际编程问题方面的巨大优势。</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎯 Devin 2.0 新功能</h3>
+                    <ul>
+                        <li><strong>Interactive Planning</strong>：交互式规划，数秒内制定详细计划</li>
+                        <li><strong>Devin Search</strong>：智能代码库搜索工具</li>
+                        <li><strong>Devin Wiki</strong>：自动生成代码库文档</li>
+                        <li><strong>深度模式</strong>：高级查询探索功能</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>💡 使用建议</h3>
+                    <ul>
+                        <li>适合<span class="tag">小型独立任务</span></li>
+                        <li>提供<span class="tag">详细需求描述</span></li>
+                        <li>及时<span class="tag">反馈优化</span>性能</li>
+                        <li>复杂任务需要<span class="tag">拆解处理</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 发展时间线 -->
+        <div class="content-section">
+            <h2 class="section-title">📅 发展时间线</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h3 style="color: #2c3e50; margin-bottom: 20px;">🗓️ 2024年重要节点</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-date">3月12日</div>
+                        <div>发布Devin 1.0，全球首个AI软件工程师</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">12月10日</div>
+                        <div>达成GA（General Availability）状态</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">12月12日</div>
+                        <div>宣布推出Devin开源计划</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: #2c3e50; margin-bottom: 20px;">🚀 2025年更新</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-date">4月3日</div>
+                        <div>发布Devin 2.0，全新IDE体验</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">5月5日</div>
+                        <div>推出DeepWiki免费公开版本</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">5月6日</div>
+                        <div>开源Kevin-32B CUDA编程模型</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">5月15日</div>
+                        <div>发布Devin 2.1版本</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>🏆 里程碑数据</h3>
+                <ul>
+                    <li>索引超过<strong>5万个</strong>顶尖GitHub公开代码库</li>
+                    <li>支持从模型上下文协议MCP到LangChain等主流项目</li>
+                    <li>在deepwiki.com上免费添加任何公开代码库</li>
+                    <li>私有代码库需注册Devin账户</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 5. 竞品对比 -->
+        <div class="content-section">
+            <h2 class="section-title">🔄 竞品对比分析</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>特性/功能</th>
+                        <th>Devin 2.0</th>
+                        <th>Windsurf</th>
+                        <th>Cursor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>核心重点</strong></td>
+                        <td class="pros">具有协作计划和文档工具的自主编码代理</td>
+                        <td>先进的项目感知集成开发环境</td>
+                        <td>人工智能增强型代码编辑器</td>
+                    </tr>
+                    <tr>
+                        <td><strong>互动规划</strong></td>
+                        <td class="pros">✅ 允许用户勾勒模糊想法，细化为可执行计划</td>
+                        <td class="pros">✅ 层叠式人工智能流，可迭代生成和运行代码</td>
+                        <td class="cons">❌ 仅限于使用自然语言命令执行任务</td>
+                    </tr>
+                    <tr>
+                        <td><strong>代码库理解</strong></td>
+                        <td class="pros">✅ Devin Search 可通过引用深入探索代码库</td>
+                        <td class="pros">✅ 本地索引引擎从整个代码库中检索上下文</td>
+                        <td>⚠️ 跨文件语义搜索，但不如前两者全面</td>
+                    </tr>
+                    <tr>
+                        <td><strong>文档支持</strong></td>
+                        <td class="pros">✅ Devin Wiki 自动生成包含架构图和源代码链接</td>
+                        <td class="pros">✅ 记忆系统可跨会话持久保存项目规则</td>
+                        <td class="cons">⚠️ 基本的文档辅助功能，缺乏自动索引</td>
+                    </tr>
+                    <tr>
+                        <td><strong>自动化功能</strong></td>
+                        <td class="pros">✅ 可自主分析代码库、发现问题并提出修复建议</td>
+                        <td class="pros">✅ Cascade 可自动进行调试、测试和迭代改进</td>
+                        <td>⚠️ 代理模式可自动执行任务，但大多数操作需要手动确认</td>
+                    </tr>
+                    <tr>
+                        <td><strong>集成开发环境</strong></td>
+                        <td class="pros">✅ 基于云的集成开发环境，支持多个并行的 Devins</td>
+                        <td class="pros">✅ 专为简化工作流程而设计的集成开发环境</td>
+                        <td>⚠️ 基于 Visual Studio Code，增强了人工智能功能</td>
+                    </tr>
+                    <tr>
+                        <td><strong>定价模式</strong></td>
+                        <td>起价 20 美元/月，可按需付费</td>
+                        <td>具有竞争力的价格</td>
+                        <td>基本计划免费；专业计划每月 20 美元</td>
+                    </tr>
+                    <tr>
+                        <td><strong>独特功能</strong></td>
+                        <td class="pros">交互式规划、Devin 维基、云托管的多代理集成开发环境</td>
+                        <td class="pros">Cascade AI 流程、从图像到代码生成</td>
+                        <td>内嵌 AI 进行精确编辑、语义搜索、实时协作</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 6. 开源生态 -->
+        <div class="content-section">
+            <h2 class="section-title">🌟 开源生态</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔓 OpenDeepWiki</h3>
+                    <span class="tag">开源复制版</span>
+                    <span class="tag">.NET 9</span>
+                    <ul>
+                        <li>开发组织：<strong>AIDotNet</strong></li>
+                        <li>技术栈：.NET 9 + 语义内核</li>
+                        <li>在线访问：<a href="https://opendeep.wiki" class="link">opendeep.wiki</a></li>
+                        <li>公司：武汉树语智能科技有限公司</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🛠️ 社区项目</h3>
+                    <span class="tag">社区驱动</span>
+                    <span class="tag">开源贡献</span>
+                    <ul>
+                        <li><strong>goat-sdk</strong>：Crossmint团队维护</li>
+                        <li><strong>deepwiki-mcp</strong>：非官方MCP实现</li>
+                        <li><strong>GitHub插件</strong>：油猴脚本支持</li>
+                        <li>多个第三方集成工具</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎯 AIDotNet 组织</h3>
+                    <span class="tag">DotNet</span>
+                    <span class="tag">AI赋能</span>
+                    <ul>
+                        <li>官网：<a href="https://ai-dotnet.com" class="link">ai-dotnet.com</a></li>
+                        <li>GitHub：<a href="https://github.com/AIDotNet" class="link">github.com/AIDotNet</a></li>
+                        <li>使命：让DotNet赋能AI</li>
+                        <li>目标：AI轻松带入您的产品</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>🚀 OpenDeepWiki 功能特色</h3>
+                <ul>
+                    <li><strong>代码分析</strong>：深度理解代码结构和逻辑</li>
+                    <li><strong>文档生成</strong>：自动生成项目文档</li>
+                    <li><strong>知识图谱</strong>：创建代码关系图谱</li>
+                    <li><strong>开发者友好</strong>：帮助开发人员更好地理解和利用代码库</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 7. 总结 -->
+        <div class="content-section">
+            <h2 class="section-title">🎉 总结</h2>
+
+            <div class="highlight">
+                <h3>🌟 Cognition AI 的核心价值</h3>
+                <p>Cognition AI 不仅仅是一个代码生成工具，而是一个完整的AI软件工程师生态系统。它通过深度理解项目上下文、提供端到端的开发能力、支持自主学习和优化，真正实现了AI与人类开发者的协作编程愿景。
+                </p>
+
+                <h3>🚀 未来发展趋势</h3>
+                <ul>
+                    <li><strong>更强的自主能力</strong>：从辅助编程到完全自主开发</li>
+                    <li><strong>更广的技术覆盖</strong>：支持更多编程语言和框架</li>
+                    <li><strong>更深的项目理解</strong>：理解业务逻辑和架构设计</li>
+                    <li><strong>更好的团队协作</strong>：多AI代理协同工作</li>
+                </ul>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💪 核心优势</h3>
+                    <ul>
+                        <li>全球首个AI软件工程师</li>
+                        <li>端到端自主开发能力</li>
+                        <li>强大的代码理解和生成</li>
+                        <li>持续学习和自我优化</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎯 应用场景</h3>
+                    <ul>
+                        <li>快速原型开发</li>
+                        <li>代码重构和优化</li>
+                        <li>Bug修复和调试</li>
+                        <li>技术栈学习</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔮 发展前景</h3>
+                    <ul>
+                        <li>AI编程助手标杆产品</li>
+                        <li>推动编程工具革命</li>
+                        <li>降低编程门槛</li>
+                        <li>提升开发效率</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
