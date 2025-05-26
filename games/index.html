@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄罗斯方块</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            display: flex;
+            gap: 20px;
+        }
+        .game-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        canvas {
+            border: 2px solid #333;
+            background-color: #000;
+        }
+        .next-piece {
+            width: 120px;
+            height: 120px;
+            border: 2px solid #333;
+            background-color: #000;
+        }
+        .score-board {
+            font-size: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .difficulty-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+        }
+        .difficulty-btn {
+            padding: 15px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #333;
+            background-color: #fff;
+            border-radius: 5px;
+            transition: all 0.3s;
+            text-align: center;
+            min-width: 120px;
+        }
+        .difficulty-btn:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.05);
+        }
+        .difficulty-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+        .difficulty-info {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .stars {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .difficulty-text {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="canvas" width="300" height="600"></canvas>
+        <div class="game-info">
+            <div>
+                <h3>下一个方块</h3>
+                <canvas id="nextCanvas" width="120" height="120"></canvas>
+            </div>
+            <div class="score-board">
+                <p>分数: <span id="score">0</span></p>
+                <p>等级: <span id="level">1</span></p>
+                <p>消除行数: <span id="lines">0</span></p>
+            </div>
+            <div class="difficulty-selector">
+                <h3>难度选择</h3>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn active" id="difficultyBtn">
+                        <div class="stars" id="starsDisplay">⭐</div>
+                        <div class="difficulty-text" id="difficultyText">1星难度</div>
+                    </button>
+                </div>
+                <div class="difficulty-info" id="difficultyInfo">1星难度 - 简单模式</div>
+            </div>
+            <button id="startBtn">开始游戏</button>
+            <button id="pauseBtn">暂停</button>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const nextCanvas = document.getElementById('nextCanvas');
+        const nextCtx = nextCanvas.getContext('2d');
+        const blockSize = 30;
+        const rows = 20;
+        const cols = 10;
+        const grid = Array(rows).fill().map(() => Array(cols).fill(0));
+        let score = 0;
+        let level = 1;
+        let lines = 0;
+        let gameLoop;
+        let isPaused = false;
+        let currentTetromino = null;
+        let nextTetromino = null;
+        let difficulty = 1; // 默认难度为1星
+        let baseSpeed = 1000; // 基础速度
+
+        const TETROMINOES = {
+            I: {
+                shape: [[1, 1, 1, 1]],
+                color: '#00f0f0'
+            },
+            J: {
+                shape: [[1, 0, 0], [1, 1, 1]],
+                color: '#0000f0'
+            },
+            L: {
+                shape: [[0, 0, 1], [1, 1, 1]],
+                color: '#f0a000'
+            },
+            O: {
+                shape: [[1, 1], [1, 1]],
+                color: '#f0f000'
+            },
+            S: {
+                shape: [[0, 1, 1], [1, 1, 0]],
+                color: '#00f000'
+            },
+            T: {
+                shape: [[0, 1, 0], [1, 1, 1]],
+                color: '#a000f0'
+            },
+            Z: {
+                shape: [[1, 1, 0], [0, 1, 1]],
+                color: '#f00000'
+            }
+        };
+
+        // 难度配置
+        const DIFFICULTY_CONFIG = {
+            1: {
+                name: '1星难度 - 简单模式',
+                baseSpeed: 1000,
+                speedIncrement: 50,
+                scoreMultiplier: 1
+            },
+            2: {
+                name: '2星难度 - 普通模式',
+                baseSpeed: 600,
+                speedIncrement: 40,
+                scoreMultiplier: 1.5
+            },
+            3: {
+                name: '3星难度 - 困难模式',
+                baseSpeed: 400,
+                speedIncrement: 30,
+                scoreMultiplier: 2
+            }
+        };
+
+        function drawGrid() {
+            // 绘制背景网格
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制已固定的方块
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    if (grid[row][col]) {
+                        ctx.fillStyle = grid[row][col];
+                        ctx.fillRect(col * blockSize, row * blockSize, blockSize - 1, blockSize - 1);
+                    }
+                }
+            }
+        }
+
+        function drawTetromino(tetromino, context = ctx, offsetX = 0, offsetY = 0) {
+            tetromino.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        context.fillStyle = tetromino.color;
+                        context.fillRect(
+                            (tetromino.x + x + offsetX) * blockSize,
+                            (tetromino.y + y + offsetY) * blockSize,
+                            blockSize - 1,
+                            blockSize - 1
+                        );
+                    }
+                });
+            });
+        }
+
+        function isCollision(tetromino, offsetX = 0, offsetY = 0) {
+            return tetromino.shape.some((row, y) => {
+                return row.some((value, x) => {
+                    if (!value) return false;
+                    const newX = tetromino.x + x + offsetX;
+                    const newY = tetromino.y + y + offsetY;
+                    return newX < 0 || newX >= cols || newY >= rows || (newY >= 0 && grid[newY][newX]);
+                });
+            });
+        }
+
+        function rotateTetromino() {
+            const originalShape = currentTetromino.shape;
+            currentTetromino.shape = currentTetromino.shape[0].map((_, i) =>
+                currentTetromino.shape.map(row => row[i]).reverse()
+            );
+            
+            if (isCollision(currentTetromino)) {
+                currentTetromino.shape = originalShape;
+            }
+        }
+
+        function spawnTetromino() {
+            const tetrominoTypes = Object.keys(TETROMINOES);
+            const type = tetrominoTypes[Math.floor(Math.random() * tetrominoTypes.length)];
+            return {
+                ...TETROMINOES[type],
+                x: Math.floor(cols / 2) - 1,
+                y: 0,
+                shape: [...TETROMINOES[type].shape.map(row => [...row])]
+            };
+        }
+
+        function lockTetromino() {
+            currentTetromino.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        const newY = currentTetromino.y + y;
+                        const newX = currentTetromino.x + x;
+                        if (newY >= 0) {
+                            grid[newY][newX] = currentTetromino.color;
+                        }
+                    }
+                });
+            });
+            checkLines();
+            currentTetromino = nextTetromino;
+            nextTetromino = spawnTetromino();
+            drawNextTetromino();
+            
+            if (isCollision(currentTetromino)) {
+                gameOver();
+            }
+        }
+
+        function checkLines() {
+            let linesCleared = 0;
+            for (let row = rows - 1; row >= 0; row--) {
+                if (grid[row].every(cell => cell !== 0)) {
+                    grid.splice(row, 1);
+                    grid.unshift(Array(cols).fill(0));
+                    linesCleared++;
+                }
+            }
+            if (linesCleared > 0) {
+                updateScore(linesCleared);
+            }
+        }
+
+        function updateScore(linesCleared) {
+            const points = [40, 100, 300, 1200];
+            const config = DIFFICULTY_CONFIG[difficulty];
+            score += Math.floor(points[linesCleared - 1] * level * config.scoreMultiplier);
+            lines += linesCleared;
+            level = Math.floor(lines / 10) + 1;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            document.getElementById('lines').textContent = lines;
+            
+            // 根据难度调整游戏速度
+            clearInterval(gameLoop);
+            const newSpeed = Math.max(100, config.baseSpeed - (level - 1) * config.speedIncrement);
+            gameLoop = setInterval(update, newSpeed);
+        }
+
+        function drawNextTetromino() {
+            nextCtx.fillStyle = '#000';
+            nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+            
+            const offsetX = 2;
+            const offsetY = 2;
+            drawTetromino(nextTetromino, nextCtx, -nextTetromino.x + offsetX, -nextTetromino.y + offsetY);
+        }
+
+        function update() {
+            if (isPaused) return;
+            
+            if (!isCollision(currentTetromino, 0, 1)) {
+                currentTetromino.y++;
+            } else {
+                lockTetromino();
+            }
+            
+            drawGrid();
+            drawTetromino(currentTetromino);
+        }
+
+        function gameOver() {
+            clearInterval(gameLoop);
+            alert(`游戏结束!\n分数: ${score}\n等级: ${level}\n消除行数: ${lines}`);
+            resetGame();
+        }
+
+        function resetGame() {
+            grid.forEach(row => row.fill(0));
+            score = 0;
+            level = 1;
+            lines = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('level').textContent = '1';
+            document.getElementById('lines').textContent = '0';
+            currentTetromino = spawnTetromino();
+            nextTetromino = spawnTetromino();
+            drawNextTetromino();
+        }
+
+        function startGame() {
+            if (gameLoop) {
+                clearInterval(gameLoop);
+            }
+            resetGame();
+            const config = DIFFICULTY_CONFIG[difficulty];
+            gameLoop = setInterval(update, config.baseSpeed);
+            document.getElementById('startBtn').textContent = '重新开始';
+        }
+
+        // 事件监听
+        document.addEventListener('keydown', (e) => {
+            if (!currentTetromino || isPaused) return;
+
+            switch (e.key) {
+                case 'ArrowLeft':
+                    if (!isCollision(currentTetromino, -1, 0)) {
+                        currentTetromino.x--;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (!isCollision(currentTetromino, 1, 0)) {
+                        currentTetromino.x++;
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (!isCollision(currentTetromino, 0, 1)) {
+                        currentTetromino.y++;
+                    }
+                    break;
+                case 'ArrowUp':
+                    rotateTetromino();
+                    break;
+                case ' ':
+                    while (!isCollision(currentTetromino, 0, 1)) {
+                        currentTetromino.y++;
+                    }
+                    break;
+            }
+            
+            drawGrid();
+            drawTetromino(currentTetromino);
+        });
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            isPaused = !isPaused;
+            document.getElementById('pauseBtn').textContent = isPaused ? '继续' : '暂停';
+        });
+
+        // 更新星星显示
+        function updateDifficultyDisplay() {
+            const starsDisplay = document.getElementById('starsDisplay');
+            const difficultyText = document.getElementById('difficultyText');
+            const difficultyInfo = document.getElementById('difficultyInfo');
+            
+            let stars = '';
+            for (let i = 0; i < difficulty; i++) {
+                stars += '⭐';
+            }
+            
+            starsDisplay.textContent = stars;
+            difficultyText.textContent = `${difficulty}星难度`;
+            difficultyInfo.textContent = DIFFICULTY_CONFIG[difficulty].name;
+        }
+
+        // 难度选择事件监听
+        document.getElementById('difficultyBtn').addEventListener('click', function() {
+            // 如果游戏正在进行，提示用户
+            if (gameLoop && !isPaused) {
+                if (!confirm('更改难度将重新开始游戏，确定要继续吗？')) {
+                    return;
+                }
+            }
+            
+            // 更新难度（1->2->3->1循环）
+            difficulty = (difficulty % 3) + 1;
+            
+            // 更新显示
+            updateDifficultyDisplay();
+            
+            // 如果游戏正在进行，重新开始
+            if (gameLoop) {
+                startGame();
+            }
+        });
+
+        // 初始化游戏
+        resetGame();
+    </script>
+</body>
+</html>

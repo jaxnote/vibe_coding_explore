@@ -1,0 +1,8 @@
+.cursor
+.vscode
+.idea
+.DS_Store
+release
+
+__pycache__
+test

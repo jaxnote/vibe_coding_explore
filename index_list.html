@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目目录 - Vibe Coding 探索项目</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+        }
+        
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.2em;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .toggle-icon {
+            font-size: 1.5em;
+            color: #667eea;
+            transition: transform 0.3s ease;
+            margin-left: 15px;
+        }
+        
+        .section-content {
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 2000px;
+            opacity: 1;
+        }
+        
+        .section-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+        
+        .section.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .section-header:hover .toggle-icon {
+            color: #764ba2;
+            transform: scale(1.1);
+        }
+        
+        .section.collapsed .section-header:hover .toggle-icon {
+            transform: rotate(-90deg) scale(1.1);
+        }
+        
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .file-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .file-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            color: white;
+        }
+        
+        .file-card:hover::before {
+            opacity: 1;
+        }
+        
+        .file-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+        }
+        
+        .file-name {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .file-description {
+            font-size: 1em;
+            opacity: 0.8;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .file-path {
+            font-size: 0.85em;
+            opacity: 0.6;
+            margin-top: 10px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        
+        .breadcrumb {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: white;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .file-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+        }
+        
+        .game-icon { color: #e74c3c; }
+        .note-icon { color: #3498db; }
+        .tetris-icon { color: #f39c12; }
+        .snake-icon { color: #2ecc71; }
+        .match-icon { color: #9b59b6; }
+        .summary-icon { color: #1abc9c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 文件目录</h1>
+            <p>Vibe Coding 探索项目 - 所有文件导航</p>
+        </div>
+        
+        <div class="breadcrumb">
+            📁 /cursor_ide_test/ - 项目根目录
+        </div>
+        
+        <!-- 游戏项目 -->
+        <div class="section" id="games-section">
+            <div class="section-header" onclick="toggleSection('games-section')">
+                <h2 class="section-title">🎮 游戏项目</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content" id="games-content">
+                <div class="file-grid">
+                    <a href="games/index.html" class="file-card">
+                        <div class="file-icon tetris-icon">🧩</div>
+                        <div class="file-name">俄罗斯方块</div>
+                        <div class="file-description">经典俄罗斯方块游戏，支持难度选择（1-3星），包含暂停、重新开始等功能</div>
+                        <div class="file-path">games/index.html</div>
+                    </a>
+                    
+                    <a href="games/index_tetris_base.html" class="file-card">
+                        <div class="file-icon tetris-icon">🎯</div>
+                        <div class="file-name">俄罗斯方块基础版</div>
+                        <div class="file-description">俄罗斯方块的基础版本，包含核心游戏逻辑和基本功能</div>
+                        <div class="file-path">games/index_tetris_base.html</div>
+                    </a>
+                    
+                    <a href="games/snake.html" class="file-card">
+                        <div class="file-icon snake-icon">🐍</div>
+                        <div class="file-name">贪吃蛇游戏</div>
+                        <div class="file-description">经典贪吃蛇游戏，支持方向键控制，包含得分系统和游戏结束检测</div>
+                        <div class="file-path">games/snake.html</div>
+                    </a>
+                    
+                    <a href="games/lianliankan.html" class="file-card">
+                        <div class="file-icon match-icon">🔗</div>
+                        <div class="file-name">连连看游戏</div>
+                        <div class="file-description">8x8网格的连连看匹配游戏，包含计时器、得分系统和动画效果</div>
+                        <div class="file-path">games/lianliankan.html</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 笔记文档 -->
+        <div class="section" id="notes-section">
+            <div class="section-header" onclick="toggleSection('notes-section')">
+                <h2 class="section-title">📚 笔记文档</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content" id="notes-content">
+                <div class="file-grid">
+                    <a href="notes/cursor_summary.html" class="file-card">
+                        <div class="file-icon summary-icon">🤖</div>
+                        <div class="file-name">Cursor AI 总结</div>
+                        <div class="file-description">Cursor AI 编程助手的全面总结，包含思维导图、功能特性、使用指南等</div>
+                        <div class="file-path">notes/cursor_summary.html</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 项目统计 -->
+        <div class="section" id="stats-section">
+            <div class="section-header" onclick="toggleSection('stats-section')">
+                <h2 class="section-title">📊 项目统计</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content" id="stats-content">
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">HTML 文件</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">游戏项目</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1</div>
+                        <div class="stat-label">文档笔记</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">JavaScript 文件</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速导航 -->
+        <div class="section" id="navigation-section">
+            <div class="section-header" onclick="toggleSection('navigation-section')">
+                <h2 class="section-title">🧭 快速导航</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content" id="navigation-content">
+                <div style="text-align: center; margin-top: 20px;">
+                    <p style="font-size: 1.1em; line-height: 1.8; opacity: 0.8;">
+                        点击上方卡片可直接跳转到对应的HTML文件<br>
+                        所有游戏都支持键盘操作，文档支持响应式浏览<br>
+                        项目基于现代Web技术构建，兼容主流浏览器
+                    </p>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: rgba(102, 126, 234, 0.1); border-radius: 15px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">💡 交互功能</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; text-align: left;">
+                            <div>
+                                <strong>🖱️ 鼠标操作：</strong><br>
+                                • 点击分类标题展开/折叠内容<br>
+                                • 悬停卡片查看动画效果
+                            </div>
+                            <div>
+                                <strong>⌨️ 键盘快捷键：</strong><br>
+                                • 数字键 1-4：切换对应分类<br>
+                                • Ctrl + 空格：全部展开/折叠
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const content = section.querySelector('.section-content');
+            const icon = section.querySelector('.toggle-icon');
+            
+            // 切换折叠状态
+            section.classList.toggle('collapsed');
+            content.classList.toggle('collapsed');
+            
+            // 更新图标
+            if (section.classList.contains('collapsed')) {
+                icon.textContent = '▶';
+            } else {
+                icon.textContent = '▼';
+            }
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 所有分类默认展开，不需要额外操作
+            console.log('项目目录页面加载完成');
+            
+            // 添加键盘快捷键支持
+            document.addEventListener('keydown', function(e) {
+                // 按数字键1-4快速切换对应分类
+                if (e.key >= '1' && e.key <= '4') {
+                    const sectionIds = ['games-section', 'notes-section', 'stats-section', 'navigation-section'];
+                    const sectionId = sectionIds[parseInt(e.key) - 1];
+                    if (sectionId) {
+                        toggleSection(sectionId);
+                    }
+                }
+                
+                // 按空格键展开/折叠所有分类
+                if (e.code === 'Space' && e.ctrlKey) {
+                    e.preventDefault();
+                    const sections = document.querySelectorAll('.section');
+                    const firstSection = sections[0];
+                    const shouldCollapse = !firstSection.classList.contains('collapsed');
+                    
+                    sections.forEach(section => {
+                        const content = section.querySelector('.section-content');
+                        const icon = section.querySelector('.toggle-icon');
+                        
+                        if (shouldCollapse) {
+                            section.classList.add('collapsed');
+                            content.classList.add('collapsed');
+                            icon.textContent = '▶';
+                        } else {
+                            section.classList.remove('collapsed');
+                            content.classList.remove('collapsed');
+                            icon.textContent = '▼';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

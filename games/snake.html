@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇游戏</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #2c3e50;
+            font-family: Arial, sans-serif;
+        }
+
+        .game-container {
+            position: relative;
+        }
+
+        canvas {
+            border: 2px solid #34495e;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .score-board {
+            color: #ecf0f1;
+            font-size: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .difficulty-selector {
+            width: 400px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .difficulty-stars {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.3s;
+            padding: 5px;
+        }
+
+        .star-btn.active {
+            color: #f1c40f;
+        }
+
+        .difficulty-text {
+            color: #ecf0f1;
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            color: #bdc3c7;
+            text-align: center;
+        }
+
+        button {
+            background: #3498db;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="score-board">
+        <div>分数: <span id="score">0</span></div>
+        <div>最高分: <span id="highScore">0</span></div>
+    </div>
+    <div class="difficulty-selector">
+        <p class="difficulty-text">难度等级</p>
+        <div class="difficulty-stars">
+            <button class="star-btn" data-level="1">★</button>
+            <button class="star-btn" data-level="2">★</button>
+            <button class="star-btn" data-level="3">★</button>
+            <button class="star-btn" data-level="4">★</button>
+            <button class="star-btn" data-level="5">★</button>
+        </div>
+    </div>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div id="gameOver" class="game-over">
+            <h2>游戏结束!</h2>
+            <p>你的分数: <span id="finalScore">0</span></p>
+            <button onclick="resetGame()">重新开始</button>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="startBtn" onclick="startGame()">开始游戏</button>
+        <button id="pauseBtn" onclick="togglePause()">暂停</button>
+        <p>使用方向键或WASD控制蛇的移动</p>
+    </div>
+
+    <script src="snake.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连连看游戏</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #2c3e50;
+            font-family: Arial, sans-serif;
+        }
+
+        .game-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            color: #ecf0f1;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            gap: 2px;
+            background: #34495e;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .tile {
+            width: 60px;
+            height: 60px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tile:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .tile.selected {
+            background: #3498db;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+        }
+
+        .tile.matched {
+            visibility: hidden;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: #3498db;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .timer {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .path-line {
+            position: absolute;
+            background: #e74c3c;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-info">
+            <div class="timer">时间: <span id="time">180</span>秒</div>
+            <div>剩余配对: <span id="remainingPairs">32</span></div>
+        </div>
+        <div class="game-board" id="gameBoard"></div>
+        <div class="controls">
+            <button onclick="startGame()">开始游戏</button>
+            <button onclick="shuffleBoard()">重新排列</button>
+        </div>
+        <div id="gameOver" class="game-over">
+            <h2>游戏结束!</h2>
+            <p id="gameOverMessage"></p>
+            <button onclick="startGame()">再玩一次</button>
+        </div>
+    </div>
+    <script src="lianliankan.js"></script>
+</body>
+</html>
