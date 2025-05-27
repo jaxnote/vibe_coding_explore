@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -18,42 +19,42 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         .header {
             text-align: center;
             color: white;
             margin-bottom: 40px;
             padding: 40px 0;
         }
-        
+
         .header h1 {
             font-size: 3.5em;
             margin-bottom: 15px;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             font-weight: 700;
         }
-        
+
         .header p {
             font-size: 1.3em;
             opacity: 0.95;
             font-weight: 300;
         }
-        
+
         .mindmap-container {
             background: white;
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(10px);
         }
-        
+
         .mindmap-container h2 {
             text-align: center;
             margin-bottom: 40px;
@@ -61,245 +62,553 @@
             font-size: 2.2em;
             font-weight: 600;
         }
-        
+
         .mindmap {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 700px;
+            min-height: 1000px;
             position: relative;
             overflow: hidden;
             background: radial-gradient(circle at center, #f8f9ff 0%, #ffffff 70%);
             border-radius: 20px;
         }
-        
+
         .central-node {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px 40px;
-            border-radius: 60px;
-            font-size: 2em;
+            padding: 35px 45px;
+            border-radius: 70px;
+            font-size: 2.2em;
             font-weight: bold;
             position: absolute;
             z-index: 10;
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-            border: 4px solid white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
+            border: 5px solid white;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
         }
-        
+
         .branch {
             position: absolute;
             background: white;
             border: 3px solid;
-            border-radius: 25px;
-            padding: 20px 25px;
-            min-width: 200px;
-            max-width: 240px;
+            border-radius: 30px;
+            padding: 22px 28px;
+            min-width: 220px;
+            max-width: 260px;
             text-align: center;
             font-weight: 600;
-            font-size: 1em;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.05em;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            user-select: none;
         }
-        
+
         .branch:hover {
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: scale(1.15) translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
             z-index: 5;
         }
-        
+
+        .branch:active {
+            transform: scale(1.08) translateY(-5px);
+        }
+
         .branch-icon {
-            font-size: 2em;
-            margin-bottom: 8px;
+            font-size: 2.2em;
+            margin-bottom: 10px;
             display: block;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
-        
+
         .branch-title {
-            font-size: 1.1em;
-            margin-bottom: 5px;
+            font-size: 1.15em;
+            margin-bottom: 6px;
             color: #2c3e50;
+            font-weight: 700;
         }
-        
+
         .branch-subtitle {
-            font-size: 0.85em;
+            font-size: 0.9em;
             color: #7f8c8d;
-            font-weight: 400;
+            font-weight: 500;
         }
-        
-        .branch-1 { 
-            border-color: #e74c3c; 
-            top: 50px; 
-            left: 50%; 
+
+        .branch-1 {
+            border-color: #e74c3c;
+            top: 50px;
+            left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
         }
-        .branch-1:hover { border-color: #c0392b; }
-        
-        .branch-2 { 
-            border-color: #3498db; 
-            top: 180px; 
-            right: 50px;
+
+        .branch-1:hover {
+            border-color: #c0392b;
+        }
+
+        .branch-2 {
+            border-color: #3498db;
+            top: 120px;
+            right: 80px;
             background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
         }
-        .branch-2:hover { border-color: #2980b9; }
-        
-        .branch-3 { 
-            border-color: #2ecc71; 
-            bottom: 180px; 
+
+        .branch-2:hover {
+            border-color: #2980b9;
+        }
+
+        .branch-3 {
+            border-color: #2ecc71;
+            top: 250px;
             right: 50px;
             background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
         }
-        .branch-3:hover { border-color: #27ae60; }
-        
-        .branch-4 { 
-            border-color: #f39c12; 
-            bottom: 50px; 
-            left: 50%; 
-            transform: translateX(-50%);
+
+        .branch-3:hover {
+            border-color: #27ae60;
+        }
+
+        .branch-4 {
+            border-color: #f39c12;
+            bottom: 250px;
+            right: 50px;
             background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
         }
-        .branch-4:hover { border-color: #e67e22; }
-        
-        .branch-5 { 
-            border-color: #9b59b6; 
-            bottom: 180px; 
-            left: 50px;
+
+        .branch-4:hover {
+            border-color: #e67e22;
+        }
+
+        .branch-5 {
+            border-color: #9b59b6;
+            bottom: 120px;
+            right: 80px;
             background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
         }
-        .branch-5:hover { border-color: #8e44ad; }
-        
-        .branch-6 { 
-            border-color: #1abc9c; 
-            top: 180px; 
-            left: 50px;
+
+        .branch-5:hover {
+            border-color: #8e44ad;
+        }
+
+        .branch-6 {
+            border-color: #1abc9c;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
             background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
         }
-        .branch-6:hover { border-color: #16a085; }
-        
+
+        .branch-6:hover {
+            border-color: #16a085;
+        }
+
+        .branch-7 {
+            border-color: #e67e22;
+            bottom: 120px;
+            left: 80px;
+            background: linear-gradient(135deg, #fff8f0 0%, #ffffff 100%);
+        }
+
+        .branch-7:hover {
+            border-color: #d35400;
+        }
+
+        .branch-8 {
+            border-color: #34495e;
+            bottom: 250px;
+            left: 50px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .branch-8:hover {
+            border-color: #2c3e50;
+        }
+
+        .branch-9 {
+            border-color: #8e44ad;
+            top: 250px;
+            left: 50px;
+            background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%);
+        }
+
+        .branch-9:hover {
+            border-color: #7d3c98;
+        }
+
+        .branch-10 {
+            border-color: #27ae60;
+            top: 120px;
+            left: 80px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%);
+        }
+
+        .branch-10:hover {
+            border-color: #229954;
+        }
+
         .connection-line {
             position: absolute;
             background: linear-gradient(45deg, #bdc3c7, #ecf0f1);
             z-index: 1;
-            border-radius: 3px;
-            opacity: 0.6;
+            border-radius: 4px;
+            opacity: 0.7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: none;
         }
-        
-        .line-1 {
-            width: 4px;
-            height: 140px;
-            top: 190px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(to bottom, #e74c3c, #ecf0f1);
+
+        .line-1,
+        .line-2,
+        .line-3,
+        .line-4,
+        .line-5,
+        .line-6,
+        .line-7,
+        .line-8,
+        .line-9,
+        .line-10 {
+            display: none;
         }
-        
-        .line-2 {
-            width: 140px;
-            height: 4px;
-            top: 50%;
-            right: 190px;
-            transform: translateY(-50%);
-            background: linear-gradient(to right, #ecf0f1, #3498db);
-        }
-        
-        .line-3 {
-            width: 140px;
-            height: 4px;
-            bottom: 50%;
-            right: 190px;
-            transform: translateY(50%);
-            background: linear-gradient(to right, #ecf0f1, #2ecc71);
-        }
-        
-        .line-4 {
-            width: 4px;
-            height: 140px;
-            bottom: 190px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(to top, #f39c12, #ecf0f1);
-        }
-        
-        .line-5 {
-            width: 140px;
-            height: 4px;
-            bottom: 50%;
-            left: 190px;
-            transform: translateY(50%);
-            background: linear-gradient(to left, #ecf0f1, #9b59b6);
-        }
-        
-        .line-6 {
-            width: 140px;
-            height: 4px;
-            top: 50%;
-            left: 190px;
-            transform: translateY(-50%);
-            background: linear-gradient(to left, #ecf0f1, #1abc9c);
-        }
-        
+
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
         }
-        
+
+        @keyframes float-centered {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0px);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(-12px);
+            }
+        }
+
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 20px 50px rgba(102, 126, 234, 0.6); }
-            100% { transform: scale(1); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4); }
+            0% {
+                transform: scale(1);
+                box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
+            }
+
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 25px 60px rgba(102, 126, 234, 0.7);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
+            }
         }
-        
+
         .central-node:hover {
-            animation: pulse 2s infinite;
+            animation: pulse 2.5s infinite;
         }
-        
+
         .branch {
-            animation: float 6s ease-in-out infinite;
+            animation: float 8s ease-in-out infinite;
         }
-        
+
+        .branch-1,
+        .branch-6 {
+            animation: float-centered 8s ease-in-out infinite;
+        }
+
         .branch:nth-child(odd) {
-            animation-delay: -2s;
+            animation-delay: -3s;
         }
-        
+
         .branch:nth-child(even) {
-            animation-delay: -4s;
+            animation-delay: -6s;
         }
-        
+
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .header p {
+                font-size: 1.1em;
+            }
+
+            .mindmap-container {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .mindmap-container h2 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
             .mindmap {
-                min-height: 600px;
-                transform: scale(0.7);
+                min-height: 800px;
+                transform: scale(0.4);
+                margin: -180px 0;
             }
-            
+
             .branch {
-                min-width: 160px;
-                max-width: 180px;
-                padding: 15px 20px;
-                font-size: 0.9em;
+                min-width: 140px;
+                max-width: 160px;
+                padding: 12px 15px;
+                font-size: 0.8em;
             }
-            
+
             .central-node {
-                padding: 25px 30px;
-                font-size: 1.6em;
+                padding: 20px 25px;
+                font-size: 1.4em;
             }
-            
+
             .branch-icon {
+                font-size: 1.3em;
+            }
+
+            .content-section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .feature-card h3 {
+                font-size: 1.2em;
+            }
+
+            .highlight {
+                padding: 20px;
+                margin: 20px 0;
+            }
+
+            .highlight h3 {
+                font-size: 1.2em;
+            }
+
+            .comparison-table {
+                font-size: 0.8em;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px;
+                min-width: 120px;
+            }
+
+            .shortcut-table {
+                font-size: 0.8em;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .shortcut-table th,
+            .shortcut-table td {
+                padding: 8px;
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .mindmap {
+                min-height: 700px;
+                transform: scale(0.3);
+                margin: -220px 0;
+            }
+
+            .central-node {
+                padding: 15px 20px;
+                font-size: 1.2em;
+            }
+
+            .branch {
+                min-width: 120px;
+                max-width: 140px;
+                padding: 10px 12px;
+                font-size: 0.7em;
+            }
+
+            .branch-icon {
+                font-size: 1.1em;
+            }
+
+            .content-section {
+                padding: 15px;
+            }
+
+            .section-title {
                 font-size: 1.5em;
             }
+
+            .feature-card {
+                padding: 15px;
+            }
+
+            .highlight {
+                padding: 15px;
+            }
+
+            .comparison-table {
+                font-size: 0.7em;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 6px;
+                min-width: 100px;
+            }
+
+            .shortcut-table {
+                font-size: 0.7em;
+            }
+
+            .shortcut-table th,
+            .shortcut-table td {
+                padding: 6px;
+                min-width: 100px;
+            }
+
+            .tag {
+                font-size: 0.7em;
+                padding: 3px 6px;
+            }
         }
-        
+
+        /* 横屏手机优化 */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .mindmap {
+                min-height: 350px;
+                transform: scale(0.7);
+                margin: -30px 0;
+            }
+
+            .header {
+                padding: 20px 0;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+        }
+
+        /* 平板优化 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                padding: 15px;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .mindmap {
+                min-height: 600px;
+                transform: scale(0.8);
+            }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
+
+            .shortcut-table {
+                font-size: 0.9em;
+            }
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .branch:hover {
+                transform: none;
+            }
+
+            .branch:active {
+                transform: scale(1.05) translateY(-3px);
+                transition: transform 0.1s ease;
+            }
+
+            .feature-card:hover {
+                transform: none;
+            }
+
+            .feature-card:active {
+                transform: translateY(-3px);
+                transition: transform 0.1s ease;
+            }
+
+            .central-node:hover {
+                animation: none;
+            }
+
+            .central-node:active {
+                animation: pulse 1s ease;
+            }
+        }
+
+        /* 高分辨率屏幕优化 */
+        @media (-webkit-min-device-pixel-ratio: 2),
+        (min-resolution: 192dpi) {
+            .central-node {
+                border-width: 2px;
+            }
+
+            .branch {
+                border-width: 2px;
+            }
+
+            .connection-line {
+                border-radius: 2px;
+            }
+        }
+
         .content-section {
             background: white;
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .section-title {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
@@ -312,86 +621,86 @@
             padding-bottom: 15px;
             font-weight: 600;
         }
-        
+
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 25px;
             margin-top: 30px;
         }
-        
+
         .feature-card {
             background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
             border-left: 5px solid;
             border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
         }
-        
+
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
-        
+
         .feature-card h3 {
             color: #2c3e50;
             margin-bottom: 15px;
             font-size: 1.3em;
             font-weight: 600;
         }
-        
+
         .shortcut-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        
+
         .shortcut-table th,
         .shortcut-table td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
         }
-        
+
         .shortcut-table th {
             background-color: #4CAF50;
             color: white;
         }
-        
+
         .shortcut-table tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-        
+
         .comparison-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        
+
         .comparison-table th,
         .comparison-table td {
             border: 1px solid #ddd;
             padding: 15px;
             text-align: center;
         }
-        
+
         .comparison-table th {
             background-color: #2c3e50;
             color: white;
         }
-        
+
         .pros {
             background-color: #d4edda;
             color: #155724;
         }
-        
+
         .cons {
             background-color: #f8d7da;
             color: #721c24;
         }
-        
+
         .highlight {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -400,13 +709,13 @@
             margin: 25px 0;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
-        
+
         .highlight h3 {
             color: white;
             margin-bottom: 15px;
             font-size: 1.4em;
         }
-        
+
         .code-block {
             background: #2d3748;
             color: #e2e8f0;
@@ -416,7 +725,7 @@
             overflow-x: auto;
             margin: 15px 0;
         }
-        
+
         .tag {
             display: inline-block;
             background: #4CAF50;
@@ -426,8 +735,47 @@
             font-size: 0.8em;
             margin: 2px;
         }
+
+        /* 返回顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-1px);
+        }
+
+        .central-node:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -439,63 +787,84 @@
         <div class="mindmap-container">
             <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">Cursor 核心功能思维导图</h2>
             <div class="mindmap">
-                <!-- 连接线 -->
-                <div class="connection-line line-1"></div>
-                <div class="connection-line line-2"></div>
-                <div class="connection-line line-3"></div>
-                <div class="connection-line line-4"></div>
-                <div class="connection-line line-5"></div>
-                <div class="connection-line line-6"></div>
-                
                 <!-- 中心节点 -->
                 <div class="central-node">Cursor AI</div>
-                
+
                 <!-- 分支节点 -->
                 <div class="branch branch-1">
+                    <span class="branch-icon">📖</span>
+                    <div class="branch-title">基本介绍</div>
+                    <div class="branch-subtitle">Cursor是什么</div>
+                </div>
+
+                <div class="branch branch-2">
+                    <span class="branch-icon">⚔️</span>
+                    <div class="branch-title">竞品对比</div>
+                    <div class="branch-subtitle">vs GitHub Copilot</div>
+                </div>
+
+                <div class="branch branch-3">
                     <span class="branch-icon">🔧</span>
                     <div class="branch-title">核心功能</div>
                     <div class="branch-subtitle">Tab/Chat/Composer</div>
                 </div>
-                
-                <div class="branch branch-2">
-                    <span class="branch-icon">🤖</span>
-                    <div class="branch-title">智能特性</div>
-                    <div class="branch-subtitle">Agent/Rules/Context</div>
-                </div>
-                
-                <div class="branch branch-3">
+
+                <div class="branch branch-4">
                     <span class="branch-icon">⌨️</span>
-                    <div class="branch-title">工作模式</div>
+                    <div class="branch-title">核心快捷键</div>
                     <div class="branch-subtitle">Command-K/L/I</div>
                 </div>
-                
-                <div class="branch branch-4">
+
+                <div class="branch branch-5">
                     <span class="branch-icon">🔗</span>
                     <div class="branch-title">上下文引用</div>
                     <div class="branch-subtitle">@Files/@Docs/@Web</div>
                 </div>
-                
-                <div class="branch branch-5">
-                    <span class="branch-icon">💻</span>
-                    <div class="branch-title">代码能力</div>
-                    <div class="branch-subtitle">生成/修改/调试</div>
-                </div>
-                
+
                 <div class="branch branch-6">
-                    <span class="branch-icon">🔌</span>
-                    <div class="branch-title">集成优势</div>
-                    <div class="branch-subtitle">VSCode兼容</div>
+                    <span class="branch-icon">🎯</span>
+                    <div class="branch-title">使用实践</div>
+                    <div class="branch-subtitle">场景与最佳实践</div>
                 </div>
+
+                <div class="branch branch-7">
+                    <span class="branch-icon">🤖</span>
+                    <div class="branch-title">高级功能</div>
+                    <div class="branch-subtitle">Bug Finder/AI Commit Messages</div>
+                </div>
+
+                <div class="branch branch-8">
+                    <span class="branch-icon">🏗️</span>
+                    <div class="branch-title">架构原理</div>
+                    <div class="branch-subtitle">核心技术架构</div>
+                </div>
+
+                <div class="branch branch-9">
+                    <span class="branch-icon">⚙️</span>
+                    <div class="branch-title">Rules 配置</div>
+                    <div class="branch-subtitle">全局/项目规则</div>
+                </div>
+
+                <div class="branch branch-10">
+                    <span class="branch-icon">🎉</span>
+                    <div class="branch-title">总结</div>
+                    <div class="branch-subtitle">核心价值与展望</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px; color: #7f8c8d; font-size: 0.9em;">
+                💡 <strong>提示：</strong>点击思维导图中的节点可快速跳转到对应章节，点击中心节点返回顶部
             </div>
         </div>
 
         <!-- 1. Cursor 基本介绍 -->
-        <div class="content-section">
+        <div class="content-section" id="introduction-section">
             <h2 class="section-title">📖 Cursor 是什么？</h2>
-            
+
             <div class="highlight">
                 <h3>🎯 核心定义</h3>
-                <p><strong>Cursor</strong> 是一个基于 VSCode 开发的 AI 辅助编程工具，集成了 GPT-4、Claude 3.5 等先进大语言模型，提供智能代码生成、修改和调试功能。</p>
+                <p><strong>Cursor</strong> 是一个基于 VSCode 开发的 AI 辅助编程工具，集成了 GPT-4、Claude 3.5 等先进大语言模型，提供智能代码生成、修改和调试功能。
+                </p>
             </div>
 
             <div class="feature-grid">
@@ -530,9 +899,9 @@
         </div>
 
         <!-- 2. Cursor vs Copilot 对比 -->
-        <div class="content-section">
+        <div class="content-section" id="comparison-section">
             <h2 class="section-title">⚔️ Cursor vs GitHub Copilot</h2>
-            
+
             <table class="comparison-table">
                 <thead>
                     <tr>
@@ -572,9 +941,9 @@
         </div>
 
         <!-- 3. 核心功能详解 -->
-        <div class="content-section">
+        <div class="content-section" id="features-section">
             <h2 class="section-title">🔧 Cursor 核心功能</h2>
-            
+
             <div class="feature-grid">
                 <div class="feature-card">
                     <h3>🎯 Tab 自动补全</h3>
@@ -587,7 +956,7 @@
                         <li>跨文件代码生成</li>
                     </ul>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>💬 Chat 聊天模式 (Ctrl+L)</h3>
                     <span class="tag">智能问答</span>
@@ -599,7 +968,7 @@
                         <li>Web 搜索集成</li>
                     </ul>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>⚡ Command-K 提示栏</h3>
                     <span class="tag">快速编辑</span>
@@ -611,7 +980,7 @@
                         <li>Git commit 消息生成</li>
                     </ul>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>🎼 Composer 模式 (Ctrl+I)</h3>
                     <span class="tag">跨文件编辑</span>
@@ -623,7 +992,7 @@
                         <li>Agent 自动化执行</li>
                     </ul>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>🤖 Agent 智能代理</h3>
                     <span class="tag">自动化</span>
@@ -635,7 +1004,7 @@
                         <li>错误自动修复</li>
                     </ul>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>📋 Cursor Rules</h3>
                     <span class="tag">自定义规则</span>
@@ -651,9 +1020,9 @@
         </div>
 
         <!-- 4. 快捷键总览 -->
-        <div class="content-section">
+        <div class="content-section" id="shortcuts-section">
             <h2 class="section-title">⌨️ 核心快捷键</h2>
-            
+
             <table class="shortcut-table">
                 <thead>
                     <tr>
@@ -705,12 +1074,13 @@
         </div>
 
         <!-- 5. 上下文引用系统 -->
-        <div class="content-section">
+        <div class="content-section" id="context-section">
             <h2 class="section-title">🔗 上下文引用系统</h2>
-            
+
             <div class="highlight">
                 <h3>📊 引用范围层级</h3>
-                <p><strong>Code < Files ≈ Git < Folders < Codebase</strong></p>
+                <p><strong>Code < Files ≈ Git < Folders < Codebase</strong>
+                </p>
                 <p>从小到大的上下文范围设计，让开发者根据问题复杂度灵活选择最合适的上下文信息。</p>
             </div>
 
@@ -725,7 +1095,7 @@
                         <li><strong>@Codebase</strong> - 全项目搜索</li>
                     </ul>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>🌐 外部信息引用</h3>
                     <ul>
@@ -739,9 +1109,9 @@
         </div>
 
         <!-- 6. 使用场景和最佳实践 -->
-        <div class="content-section">
+        <div class="content-section" id="practices-section">
             <h2 class="section-title">🎯 使用场景与最佳实践</h2>
-            
+
             <div class="feature-grid">
                 <div class="feature-card">
                     <h3>🚀 适用场景</h3>
@@ -754,7 +1124,7 @@
                         <li>学习新技术栈</li>
                     </ul>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>💡 最佳实践</h3>
                     <ul>
@@ -770,61 +1140,61 @@
         </div>
 
         <!-- 7. Cursor Rules 配置示例 -->
-        <div class="content-section">
+        <div class="content-section" id="rules-section">
             <h2 class="section-title">⚙️ Cursor Rules 配置</h2>
-            
+
             <h3>🌐 全局规则示例</h3>
             <div class="code-block">
-# 在 Cursor 设置 > AI 规则中配置
+                # 在 Cursor 设置 > AI 规则中配置
 
-- 所有新代码使用 TypeScript
-- 遵循代码整洁之道原则
-- 优先使用 async/await 而不是回调
-- 编写完善的错误处理机制
-- 使用函数式编程模式
-- 保持代码简洁和可读性
+                - 所有新代码使用 TypeScript
+                - 遵循代码整洁之道原则
+                - 优先使用 async/await 而不是回调
+                - 编写完善的错误处理机制
+                - 使用函数式编程模式
+                - 保持代码简洁和可读性
             </div>
-            
+
             <h3>📁 项目规则示例 (.cursor/rules/react.mdc)</h3>
             <div class="code-block">
-# 文件模式：*.tsx, *.ts
+                # 文件模式：*.tsx, *.ts
 
-## React 开发规范
-- 使用函数组件替代类组件
-- 实现完整的 TypeScript 类型定义
-- 遵循 React Hooks 最佳实践
-- 使用 React.memo 优化性能
+                ## React 开发规范
+                - 使用函数组件替代类组件
+                - 实现完整的 TypeScript 类型定义
+                - 遵循 React Hooks 最佳实践
+                - 使用 React.memo 优化性能
 
-## 样式规范
-- 使用 Tailwind CSS 进行样式开发
-- 遵循移动优先的响应式设计
-- 保持组件样式的一致性
+                ## 样式规范
+                - 使用 Tailwind CSS 进行样式开发
+                - 遵循移动优先的响应式设计
+                - 保持组件样式的一致性
 
-@file ../tsconfig.json
-@file ../tailwind.config.js
+                @file ../tsconfig.json
+                @file ../tailwind.config.js
             </div>
         </div>
 
         <!-- 8. 高级功能 -->
-        <div class="content-section">
+        <div class="content-section" id="advanced-section">
             <h2 class="section-title">🔥 高级功能特性</h2>
-            
+
             <div class="feature-grid">
                 <div class="feature-card">
                     <h3>🔍 Bug Finder</h3>
                     <p>自动检测代码中的潜在问题，对比主分支变更，识别可能引入的 Bug。</p>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>📝 AI Commit Messages</h3>
                     <p>基于代码变更自动生成有意义的 Git 提交信息，提高版本控制质量。</p>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>📚 Notepad 模板</h3>
                     <p>创建可复用的上下文模板，在不同项目间共享开发规范和最佳实践。</p>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>🎨 设计转代码</h3>
                     <p>结合 Builder.io Visual Copilot，将 Figma 设计直接转换为高质量代码。</p>
@@ -833,9 +1203,9 @@
         </div>
 
         <!-- 9. 架构原理 -->
-        <div class="content-section">
+        <div class="content-section" id="architecture-section">
             <h2 class="section-title">🏗️ 架构与底层原理</h2>
-            
+
             <div class="highlight">
                 <h3>🧠 核心技术架构</h3>
                 <ul>
@@ -846,7 +1216,7 @@
                     <li><strong>实时协作</strong>：云端同步 + 本地缓存</li>
                 </ul>
             </div>
-            
+
             <div class="feature-grid">
                 <div class="feature-card">
                     <h3>🔄 工作流程</h3>
@@ -858,7 +1228,7 @@
                         <li>代码应用和验证</li>
                     </ol>
                 </div>
-                
+
                 <div class="feature-card">
                     <h3>💾 本地存储</h3>
                     <ul>
@@ -872,13 +1242,13 @@
         </div>
 
         <!-- 10. 总结 -->
-        <div class="content-section">
+        <div class="content-section" id="summary-section">
             <h2 class="section-title">🎉 总结</h2>
-            
+
             <div class="highlight">
                 <h3>🌟 Cursor 的核心价值</h3>
                 <p>Cursor 不仅仅是一个代码补全工具，而是一个完整的 AI 辅助编程生态系统。它通过深度理解代码上下文、提供多模态交互方式、支持端到端的开发流程，真正实现了人机协作编程的愿景。</p>
-                
+
                 <h3>🚀 未来发展方向</h3>
                 <ul>
                     <li>更强的 Agent 自动化能力</li>
@@ -889,5 +1259,118 @@
             </div>
         </div>
     </div>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        ↑
+    </button>
+
+    <script>
+        // 返回顶部功能
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // 监听滚动事件，显示/隐藏返回顶部按钮
+        window.addEventListener('scroll', function () {
+            const backToTopButton = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Cursor AI 页面加载完成');
+
+            // 为思维导图分支添加点击事件
+            const branches = document.querySelectorAll('.branch');
+            console.log(`找到 ${branches.length} 个思维导图分支节点`);
+
+            branches.forEach((branch, index) => {
+                branch.addEventListener('click', function () {
+                    // 定义每个分支对应的章节ID
+                    const sectionIds = [
+                        'introduction-section',  // 📖 基本介绍 -> Cursor是什么
+                        'comparison-section',    // ⚔️ 竞品对比 -> vs GitHub Copilot
+                        'features-section',      // 🔧 核心功能 -> Tab/Chat/Composer
+                        'shortcuts-section',     // ⌨️ 核心快捷键 -> Command-K/L/I
+                        'context-section',       // 🔗 上下文引用 -> @Files/@Docs/@Web
+                        'practices-section',     // 🎯 使用实践 -> 场景与最佳实践
+                        'advanced-section',      // 🤖 高级功能 -> Bug Finder/AI Commit Messages
+                        'architecture-section',  // 🏗️ 架构原理 -> 核心技术架构
+                        'rules-section',         // ⚙️ Cursor Rules 配置 -> Rules 配置
+                        'summary-section'        // 🎉 总结 -> 核心价值与展望
+                    ];
+
+                    const targetSectionId = sectionIds[index];
+                    const targetSection = document.getElementById(targetSectionId);
+
+                    console.log(`点击分支 ${index + 1}，目标章节ID: ${targetSectionId}`);
+
+                    if (targetSection) {
+                        console.log(`找到目标章节，开始跳转`);
+
+                        // 添加视觉反馈
+                        branch.style.transform = 'scale(1.15) translateY(-8px)';
+                        setTimeout(() => {
+                            branch.style.transform = '';
+                        }, 200);
+
+                        // 平滑滚动到目标章节
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+
+                        // 添加高亮效果
+                        targetSection.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.3)';
+                        setTimeout(() => {
+                            targetSection.style.boxShadow = '';
+                        }, 2000);
+                    } else {
+                        console.error(`未找到目标章节: ${targetSectionId}`);
+                    }
+                });
+
+                // 添加鼠标悬停提示
+                branch.setAttribute('title', `点击跳转到对应章节`);
+            });
+
+            // 为中心节点添加点击回到顶部功能
+            const centralNode = document.querySelector('.central-node');
+            if (centralNode) {
+                console.log('找到中心节点，添加点击事件');
+
+                centralNode.addEventListener('click', function () {
+                    console.log('点击中心节点，返回顶部');
+
+                    // 添加视觉反馈
+                    this.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+
+                    // 滚动到页面顶部
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // 添加鼠标悬停提示
+                centralNode.setAttribute('title', '点击回到页面顶部');
+                centralNode.style.cursor = 'pointer';
+            } else {
+                console.error('未找到中心节点');
+            }
+        });
+    </script>
 </body>
+
 </html>
