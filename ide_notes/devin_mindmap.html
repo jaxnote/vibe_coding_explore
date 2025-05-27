@@ -87,6 +87,8 @@
             border: 4px solid white;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             text-align: center;
+            cursor: pointer;
+            user-select: none;
         }
 
         .branch {
@@ -104,12 +106,17 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             backdrop-filter: blur(10px);
+            user-select: none;
         }
 
         .branch:hover {
             transform: scale(1.1) translateY(-5px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             z-index: 5;
+        }
+
+        .branch:active {
+            transform: scale(1.05) translateY(-3px);
         }
 
         .branch-icon {
@@ -306,25 +313,272 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .header p {
+                font-size: 1.1em;
+            }
+
+            .mindmap-container {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .mindmap-container h2 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
             .mindmap {
-                min-height: 600px;
-                transform: scale(0.7);
+                min-height: 500px;
+                transform: scale(0.6);
+                margin: -50px 0;
             }
 
             .branch {
-                min-width: 160px;
-                max-width: 180px;
-                padding: 15px 20px;
-                font-size: 0.9em;
+                min-width: 140px;
+                max-width: 160px;
+                padding: 12px 15px;
+                font-size: 0.8em;
             }
 
             .central-node {
-                padding: 25px 30px;
-                font-size: 1.6em;
+                padding: 20px 25px;
+                font-size: 1.4em;
             }
 
             .branch-icon {
+                font-size: 1.3em;
+            }
+
+            .content-section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .feature-card h3 {
+                font-size: 1.2em;
+            }
+
+            .highlight {
+                padding: 20px;
+                margin: 20px 0;
+            }
+
+            .highlight h3 {
+                font-size: 1.2em;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .stat-item {
+                padding: 10px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .comparison-table {
+                font-size: 0.8em;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px;
+                min-width: 120px;
+            }
+
+            .timeline-item {
+                margin-bottom: 15px;
+                padding-left: 15px;
+            }
+
+            .timeline-date {
+                font-size: 0.9em;
+            }
+
+            .timeline-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .mindmap {
+                min-height: 400px;
+                transform: scale(0.5);
+                margin: -80px 0;
+            }
+
+            .central-node {
+                padding: 15px 20px;
+                font-size: 1.2em;
+            }
+
+            .branch {
+                min-width: 120px;
+                max-width: 140px;
+                padding: 10px 12px;
+                font-size: 0.7em;
+            }
+
+            .branch-icon {
+                font-size: 1.1em;
+            }
+
+            .content-section {
+                padding: 15px;
+            }
+
+            .section-title {
                 font-size: 1.5em;
+            }
+
+            .feature-card {
+                padding: 15px;
+            }
+
+            .highlight {
+                padding: 15px;
+            }
+
+            .comparison-table {
+                font-size: 0.7em;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 6px;
+                min-width: 100px;
+            }
+
+            .stats {
+                gap: 10px;
+            }
+
+            .stat-number {
+                font-size: 1.3em;
+            }
+
+            .tag {
+                font-size: 0.7em;
+                padding: 3px 6px;
+            }
+        }
+
+        /* 横屏手机优化 */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .mindmap {
+                min-height: 350px;
+                transform: scale(0.7);
+                margin: -30px 0;
+            }
+
+            .header {
+                padding: 20px 0;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+        }
+
+        /* 平板优化 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                padding: 15px;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .mindmap {
+                min-height: 600px;
+                transform: scale(0.8);
+            }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .branch:hover {
+                transform: none;
+            }
+
+            .branch:active {
+                transform: scale(1.05) translateY(-3px);
+                transition: transform 0.1s ease;
+            }
+
+            .feature-card:hover {
+                transform: none;
+            }
+
+            .feature-card:active {
+                transform: translateY(-3px);
+                transition: transform 0.1s ease;
+            }
+
+            .central-node:hover {
+                animation: none;
+            }
+
+            .central-node:active {
+                animation: pulse 1s ease;
+            }
+        }
+
+        /* 高分辨率屏幕优化 */
+        @media (-webkit-min-device-pixel-ratio: 2),
+        (min-resolution: 192dpi) {
+            .central-node {
+                border-width: 2px;
+            }
+
+            .branch {
+                border-width: 2px;
+            }
+
+            .connection-line {
+                border-radius: 2px;
             }
         }
 
@@ -494,6 +748,50 @@
             color: #667eea;
             margin-bottom: 5px;
         }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* 返回顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-1px);
+        }
+
+        .central-node:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 
@@ -559,10 +857,14 @@
                     <div class="branch-subtitle">OpenDeepWiki/社区</div>
                 </div>
             </div>
+
+            <div style="text-align: center; margin-top: 20px; color: #7f8c8d; font-size: 0.9em;">
+                💡 <strong>提示：</strong>点击思维导图中的节点可快速跳转到对应章节，点击中心节点返回顶部
+            </div>
         </div>
 
         <!-- 1. Cognition AI 公司介绍 -->
-        <div class="content-section">
+        <div class="content-section" id="company-section">
             <h2 class="section-title">🏢 Cognition AI 公司</h2>
 
             <div class="highlight">
@@ -602,7 +904,7 @@
         </div>
 
         <!-- 2. 产品矩阵 -->
-        <div class="content-section">
+        <div class="content-section" id="product-section">
             <h2 class="section-title">🚀 产品矩阵</h2>
 
             <div class="feature-grid">
@@ -666,7 +968,7 @@
         </div>
 
         <!-- 3. 核心功能 -->
-        <div class="content-section">
+        <div class="content-section" id="features-section">
             <h2 class="section-title">⚡ 核心功能</h2>
 
             <div class="feature-grid">
@@ -754,10 +1056,10 @@
         </div>
 
         <!-- 4. 发展时间线 -->
-        <div class="content-section">
+        <div class="content-section" id="timeline-section">
             <h2 class="section-title">📅 发展时间线</h2>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div class="timeline-grid">
                 <div>
                     <h3 style="color: #2c3e50; margin-bottom: 20px;">🗓️ 2024年重要节点</h3>
                     <div class="timeline-item">
@@ -807,7 +1109,7 @@
         </div>
 
         <!-- 5. 竞品对比 -->
-        <div class="content-section">
+        <div class="content-section" id="comparison-section">
             <h2 class="section-title">🔄 竞品对比分析</h2>
 
             <table class="comparison-table">
@@ -873,7 +1175,7 @@
         </div>
 
         <!-- 6. 开源生态 -->
-        <div class="content-section">
+        <div class="content-section" id="opensource-section">
             <h2 class="section-title">🌟 开源生态</h2>
 
             <div class="feature-grid">
@@ -976,6 +1278,114 @@
             </div>
         </div>
     </div>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        ↑
+    </button>
+
+    <script>
+        // 返回顶部功能
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // 监听滚动事件，显示/隐藏返回顶部按钮
+        window.addEventListener('scroll', function () {
+            const backToTopButton = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Cognition AI 页面加载完成');
+
+            // 为思维导图分支添加点击事件
+            const branches = document.querySelectorAll('.branch');
+            console.log(`找到 ${branches.length} 个思维导图分支节点`);
+
+            branches.forEach((branch, index) => {
+                branch.addEventListener('click', function () {
+                    // 定义每个分支对应的章节ID
+                    const sectionIds = [
+                        'company-section',    // 🏢 Cognition AI
+                        'product-section',    // 🚀 产品矩阵
+                        'features-section',   // ⚡ 核心功能
+                        'timeline-section',   // 📅 发展时间线
+                        'comparison-section', // 🔄 竞品对比
+                        'opensource-section'  // 🌟 开源生态
+                    ];
+
+                    const targetSectionId = sectionIds[index];
+                    const targetSection = document.getElementById(targetSectionId);
+
+                    console.log(`点击分支 ${index + 1}，目标章节ID: ${targetSectionId}`);
+
+                    if (targetSection) {
+                        console.log(`找到目标章节，开始跳转`);
+
+                        // 添加视觉反馈
+                        branch.style.transform = 'scale(1.15) translateY(-8px)';
+                        setTimeout(() => {
+                            branch.style.transform = '';
+                        }, 200);
+
+                        // 平滑滚动到目标章节
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+
+                        // 添加高亮效果
+                        targetSection.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.3)';
+                        setTimeout(() => {
+                            targetSection.style.boxShadow = '';
+                        }, 2000);
+                    } else {
+                        console.error(`未找到目标章节: ${targetSectionId}`);
+                    }
+                });
+
+                // 添加鼠标悬停提示
+                branch.setAttribute('title', `点击跳转到对应章节`);
+            });
+
+            // 为中心节点添加点击回到顶部功能
+            const centralNode = document.querySelector('.central-node');
+            if (centralNode) {
+                console.log('找到中心节点，添加点击事件');
+
+                centralNode.addEventListener('click', function () {
+                    console.log('点击中心节点，返回顶部');
+
+                    // 添加视觉反馈
+                    this.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+
+                    // 滚动到页面顶部
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // 添加鼠标悬停提示
+                centralNode.setAttribute('title', '点击回到页面顶部');
+                centralNode.style.cursor = 'pointer';
+            } else {
+                console.error('未找到中心节点');
+            }
+        });
+    </script>
 </body>
 
 </html>
