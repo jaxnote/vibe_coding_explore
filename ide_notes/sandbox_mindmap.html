@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandbox 全面解析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .mindmap-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .mindmap-container h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        .mindmap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 700px;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #f8f9ff 0%, #ffffff 70%);
+            border-radius: 20px;
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 60px;
+            font-size: 2em;
+            font-weight: bold;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            border: 4px solid white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .branch {
+            position: absolute;
+            background: white;
+            border: 3px solid;
+            border-radius: 25px;
+            padding: 20px 25px;
+            min-width: 200px;
+            max-width: 240px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1em;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            user-select: none;
+        }
+
+        .branch:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+        }
+
+        .branch:active {
+            transform: scale(1.05) translateY(-3px);
+        }
+
+        .branch-icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .branch-title {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .branch-subtitle {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            font-weight: 400;
+        }
+
+        .branch-1 {
+            border-color: #e74c3c;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+        }
+
+        .branch-2 {
+            border-color: #3498db;
+            top: 180px;
+            right: 50px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+        }
+
+        .branch-3 {
+            border-color: #2ecc71;
+            bottom: 180px;
+            right: 50px;
+            background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+        }
+
+        .branch-4 {
+            border-color: #f39c12;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+        }
+
+        .branch-5 {
+            border-color: #9b59b6;
+            bottom: 180px;
+            left: 50px;
+            background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+        }
+
+        .branch-6 {
+            border-color: #1abc9c;
+            top: 180px;
+            left: 50px;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+        }
+
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(45deg, #bdc3c7, #ecf0f1);
+            z-index: 1;
+            border-radius: 3px;
+            opacity: 0.6;
+        }
+
+        .line-1 {
+            width: 4px;
+            height: 140px;
+            top: 190px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to bottom, #e74c3c, #ecf0f1);
+        }
+
+        .line-2 {
+            width: 140px;
+            height: 4px;
+            top: 50%;
+            right: 190px;
+            transform: translateY(-50%);
+            background: linear-gradient(to right, #ecf0f1, #3498db);
+        }
+
+        .line-3 {
+            width: 140px;
+            height: 4px;
+            bottom: 50%;
+            right: 190px;
+            transform: translateY(50%);
+            background: linear-gradient(to right, #ecf0f1, #2ecc71);
+        }
+
+        .line-4 {
+            width: 4px;
+            height: 140px;
+            bottom: 190px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to top, #f39c12, #ecf0f1);
+        }
+
+        .line-5 {
+            width: 140px;
+            height: 4px;
+            bottom: 50%;
+            left: 190px;
+            transform: translateY(50%);
+            background: linear-gradient(to left, #9b59b6, #ecf0f1);
+        }
+
+        .line-6 {
+            width: 140px;
+            height: 4px;
+            top: 50%;
+            left: 190px;
+            transform: translateY(-50%);
+            background: linear-gradient(to left, #1abc9c, #ecf0f1);
+        }
+
+        .ai-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #2c3e50;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border-left: 5px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .comparison-table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .pros {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .cons {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .highlight h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+
+        .link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .timeline-item {
+            border-left: 3px solid #667eea;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .timeline-date {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-1px);
+        }
+
+        .central-node:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 20px 50px rgba(102, 126, 234, 0.6);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        .central-node:hover {
+            animation: pulse 2s infinite;
+        }
+
+        .branch {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .branch:nth-child(odd) {
+            animation-delay: -2s;
+        }
+
+        .branch:nth-child(even) {
+            animation-delay: -4s;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .header p {
+                font-size: 1.1em;
+            }
+
+            .mindmap-container {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .mindmap-container h2 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .mindmap {
+                min-height: 500px;
+                transform: scale(0.6);
+                margin: -50px 0;
+            }
+
+            .branch {
+                min-width: 140px;
+                max-width: 160px;
+                padding: 12px 15px;
+                font-size: 0.8em;
+            }
+
+            .central-node {
+                padding: 20px 25px;
+                font-size: 1.4em;
+            }
+
+            .branch-icon {
+                font-size: 1.3em;
+            }
+
+            .content-section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .feature-card h3 {
+                font-size: 1.2em;
+            }
+
+            .highlight {
+                padding: 20px;
+                margin: 20px 0;
+            }
+
+            .highlight h3 {
+                font-size: 1.2em;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .stat-item {
+                padding: 10px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .comparison-table {
+                font-size: 0.8em;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px;
+                min-width: 120px;
+            }
+
+            .timeline-item {
+                margin-bottom: 15px;
+                padding-left: 15px;
+            }
+
+            .timeline-date {
+                font-size: 0.9em;
+            }
+
+            .timeline-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sandbox 全面解析</h1>
+            <p>安全隔离机制的核心概念与实践</p>
+        </div>
+
+        <div class="mindmap-container">
+            <h2>Sandbox 思维导图</h2>
+            <div class="mindmap">
+                <div class="ai-tag">AI 生成内容</div>
+
+                <div class="central-node">Sandbox</div>
+
+                <div class="branch branch-1">
+                    <span class="branch-icon">🔒</span>
+                    <div class="branch-title">核心特征</div>
+                    <div class="branch-subtitle">资源隔离、权限限制、行为监控、环境可控</div>
+                </div>
+
+                <div class="branch branch-2">
+                    <span class="branch-icon">🏗️</span>
+                    <div class="branch-title">实现技术</div>
+                    <div class="branch-subtitle">Seccomp、AppArmor、Firecracker、gVisor</div>
+                </div>
+
+                <div class="branch branch-3">
+                    <span class="branch-icon">🔍</span>
+                    <div class="branch-title">检测方法</div>
+                    <div class="branch-subtitle">资源访问检查、系统调用探测、硬件指纹分析</div>
+                </div>
+
+                <div class="branch branch-4">
+                    <span class="branch-icon">📊</span>
+                    <div class="branch-title">分类方式</div>
+                    <div class="branch-subtitle">进程级、系统级、语言级沙箱</div>
+                </div>
+
+                <div class="branch branch-5">
+                    <span class="branch-icon">🚀</span>
+                    <div class="branch-title">前沿演进</div>
+                    <div class="branch-subtitle">硬件辅助、零信任、混合架构</div>
+                </div>
+
+                <div class="branch branch-6">
+                    <span class="branch-icon">💡</span>
+                    <div class="branch-title">应用场景</div>
+                    <div class="branch-subtitle">开发测试、安全分析、生产环境</div>
+                </div>
+
+                <div class="connection-line line-1"></div>
+                <div class="connection-line line-2"></div>
+                <div class="connection-line line-3"></div>
+                <div class="connection-line line-4"></div>
+                <div class="connection-line line-5"></div>
+                <div class="connection-line line-6"></div>
+            </div>
+        </div>
+
+        <!-- 1. 核心特征 -->
+        <div class="content-section" id="features-section">
+            <h2 class="section-title">🔒 核心特征</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🛡️ 资源隔离</h3>
+                    <ul>
+                        <li><strong>进程隔离</strong>：独立的进程地址空间</li>
+                        <li><strong>文件系统隔离</strong>：限制文件访问权限</li>
+                        <li><strong>网络隔离</strong>：控制网络连接和通信</li>
+                        <li><strong>内存隔离</strong>：防止内存泄露和溢出</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔐 权限限制</h3>
+                    <ul>
+                        <li><strong>系统调用限制</strong>：白名单机制</li>
+                        <li><strong>API访问控制</strong>：精细化权限管理</li>
+                        <li><strong>硬件访问限制</strong>：阻止危险操作</li>
+                        <li><strong>特权操作阻止</strong>：防止提权攻击</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>👁️ 行为监控</h3>
+                    <ul>
+                        <li><strong>实时监控</strong>：动态行为分析</li>
+                        <li><strong>日志记录</strong>：完整的活动追踪</li>
+                        <li><strong>异常检测</strong>：识别可疑行为</li>
+                        <li><strong>性能分析</strong>：资源使用监控</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎛️ 环境可控</h3>
+                    <ul>
+                        <li><strong>配置管理</strong>：灵活的环境设置</li>
+                        <li><strong>版本控制</strong>：环境版本管理</li>
+                        <li><strong>快速重置</strong>：环境快速恢复</li>
+                        <li><strong>标准化</strong>：一致的运行环境</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>🔑 安全隔离的核心原理</h3>
+                <p>Sandbox技术通过创建受控的执行环境，将潜在的恶意代码与系统核心组件隔离开来。这种隔离机制不仅保护了主机系统，还为安全研究、软件测试和威胁分析提供了理想的平台。</p>
+            </div>
+        </div>
+
+        <!-- 2. 实现技术 -->
+        <div class="content-section" id="technology-section">
+            <h2 class="section-title">🏗️ 实现技术</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚙️ Seccomp</h3>
+                    <span class="tag">系统调用过滤</span>
+                    <span class="tag">Linux内核</span>
+                    <ul>
+                        <li><strong>Secure Computing</strong>：安全计算模式</li>
+                        <li><strong>系统调用白名单</strong>：只允许安全的系统调用</li>
+                        <li><strong>BPF过滤器</strong>：高效的规则匹配</li>
+                        <li><strong>Chrome/Docker</strong>：广泛应用于容器技术</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🛡️ AppArmor</h3>
+                    <span class="tag">强制访问控制</span>
+                    <span class="tag">Ubuntu默认</span>
+                    <ul>
+                        <li><strong>路径级访问控制</strong>：文件和目录权限</li>
+                        <li><strong>配置文件驱动</strong>：灵活的安全策略</li>
+                        <li><strong>学习模式</strong>：自动生成安全策略</li>
+                        <li><strong>应用程序隔离</strong>：进程级别保护</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔥 Firecracker</h3>
+                    <span class="tag">微虚拟机</span>
+                    <span class="tag">AWS开源</span>
+                    <ul>
+                        <li><strong>极速启动</strong>：毫秒级虚拟机启动</li>
+                        <li><strong>最小化内存</strong>：低资源消耗</li>
+                        <li><strong>KVM基础</strong>：硬件虚拟化支持</li>
+                        <li><strong>Lambda/Fargate</strong>：AWS Serverless底层</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🛡️ gVisor</h3>
+                    <span class="tag">用户态内核</span>
+                    <span class="tag">Google开源</span>
+                    <ul>
+                        <li><strong>用户态系统调用</strong>：拦截内核调用</li>
+                        <li><strong>Go语言实现</strong>：内存安全优势</li>
+                        <li><strong>OCI兼容</strong>：支持标准容器</li>
+                        <li><strong>多层防护</strong>：深度防御策略</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>🔧 技术选择指南</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">Seccomp</div>
+                        <div class="stat-label">系统调用控制</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">AppArmor</div>
+                        <div class="stat-label">应用程序防护</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">Firecracker</div>
+                        <div class="stat-label">轻量级虚拟化</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">gVisor</div>
+                        <div class="stat-label">容器安全强化</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 检测方法 -->
+        <div class="content-section" id="detection-section">
+            <h2 class="section-title">🔍 检测方法</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🗂️ 资源访问检查</h3>
+                    <ul>
+                        <li><strong>文件系统探测</strong>：检查特殊文件路径</li>
+                        <li><strong>注册表检查</strong>：Windows特定标识</li>
+                        <li><strong>环境变量</strong>：sandbox特有变量</li>
+                        <li><strong>进程列表</strong>：沙箱进程识别</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>⚡ 系统调用探测</h3>
+                    <ul>
+                        <li><strong>受限API调用</strong>：尝试危险操作</li>
+                        <li><strong>时间延迟检测</strong>：执行速度异常</li>
+                        <li><strong>返回值分析</strong>：API调用结果</li>
+                        <li><strong>权限测试</strong>：提权操作尝试</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔬 硬件指纹分析</h3>
+                    <ul>
+                        <li><strong>CPU特征检测</strong>：虚拟化指令</li>
+                        <li><strong>内存布局</strong>：地址空间特征</li>
+                        <li><strong>硬件信息</strong>：虚拟设备标识</li>
+                        <li><strong>性能测试</strong>：计算能力分析</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🌐 网络行为分析</h3>
+                    <ul>
+                        <li><strong>网络连接限制</strong>：出站连接检测</li>
+                        <li><strong>DNS解析</strong>：域名解析能力</li>
+                        <li><strong>端口扫描</strong>：网络可达性测试</li>
+                        <li><strong>流量分析</strong>：网络通信模式</li>
+                    </ul>
+                </div>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>检测技术</th>
+                        <th>检测原理</th>
+                        <th>准确率</th>
+                        <th>应用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>文件系统检测</strong></td>
+                        <td>查找沙箱特有文件和路径</td>
+                        <td class="pros">85%</td>
+                        <td>恶意软件反分析</td>
+                    </tr>
+                    <tr>
+                        <td><strong>API Hook检测</strong></td>
+                        <td>检测系统API的拦截</td>
+                        <td class="pros">90%</td>
+                        <td>高级威胁检测</td>
+                    </tr>
+                    <tr>
+                        <td><strong>硬件指纹</strong></td>
+                        <td>分析虚拟化硬件特征</td>
+                        <td class="pros">95%</td>
+                        <td>VM环境识别</td>
+                    </tr>
+                    <tr>
+                        <td><strong>时间分析</strong></td>
+                        <td>测试执行时间异常</td>
+                        <td class="cons">70%</td>
+                        <td>动态分析检测</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 4. 分类方式 -->
+        <div class="content-section" id="classification-section">
+            <h2 class="section-title">📊 分类方式</h2>
+
+            <div class="timeline-grid">
+                <div>
+                    <h3 style="color: #2c3e50; margin-bottom: 20px;">🔧 按实现层次分类</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-date">进程级沙箱</div>
+                        <div>在应用程序内部创建隔离环境，如Chrome的渲染进程隔离</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">系统级沙箱</div>
+                        <div>利用操作系统内核功能实现隔离，如Docker容器</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">硬件级沙箱</div>
+                        <div>基于虚拟机技术的完全隔离，如VMware、VirtualBox</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: #2c3e50; margin-bottom: 20px;">🎯 按应用目的分类</h3>
+                    <div class="timeline-item">
+                        <div class="timeline-date">安全研究</div>
+                        <div>恶意软件分析、漏洞研究、威胁情报收集</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">开发测试</div>
+                        <div>软件测试、持续集成、代码质量保证</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">生产运行</div>
+                        <div>容器化部署、微服务架构、云原生应用</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💻 语言级沙箱</h3>
+                    <span class="tag">编程语言</span>
+                    <span class="tag">运行时</span>
+                    <ul>
+                        <li><strong>Java虚拟机</strong>：字节码安全执行</li>
+                        <li><strong>.NET沙箱</strong>：代码访问安全</li>
+                        <li><strong>JavaScript V8</strong>：浏览器脚本隔离</li>
+                        <li><strong>WebAssembly</strong>：安全的二进制格式</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🌐 浏览器沙箱</h3>
+                    <span class="tag">Web安全</span>
+                    <span class="tag">多进程</span>
+                    <ul>
+                        <li><strong>渲染进程隔离</strong>：每个标签页独立</li>
+                        <li><strong>同源策略</strong>：跨域访问控制</li>
+                        <li><strong>插件隔离</strong>：第三方扩展安全</li>
+                        <li><strong>内容安全策略</strong>：CSP防护机制</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>☁️ 云沙箱服务</h3>
+                    <span class="tag">托管服务</span>
+                    <span class="tag">API接口</span>
+                    <ul>
+                        <li><strong>VirusTotal</strong>：文件扫描分析</li>
+                        <li><strong>Joe Sandbox</strong>：深度行为分析</li>
+                        <li><strong>Cuckoo Sandbox</strong>：开源分析平台</li>
+                        <li><strong>Any.run</strong>：交互式恶意软件分析</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 前沿演进 -->
+        <div class="content-section" id="evolution-section">
+            <h2 class="section-title">🚀 前沿演进</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔧 硬件辅助安全</h3>
+                    <span class="tag">Intel TXT</span>
+                    <span class="tag">ARM TrustZone</span>
+                    <ul>
+                        <li><strong>可信执行环境</strong>：TEE技术应用</li>
+                        <li><strong>硬件安全模块</strong>：HSM集成</li>
+                        <li><strong>内存保护扩展</strong>：MPX/CET技术</li>
+                        <li><strong>机密计算</strong>：数据加密处理</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔒 零信任架构</h3>
+                    <span class="tag">Never Trust</span>
+                    <span class="tag">Always Verify</span>
+                    <ul>
+                        <li><strong>身份验证</strong>：多因子认证强化</li>
+                        <li><strong>最小权限原则</strong>：精确权限控制</li>
+                        <li><strong>持续验证</strong>：动态权限调整</li>
+                        <li><strong>微分段</strong>：网络级隔离</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔀 混合架构</h3>
+                    <span class="tag">多层防护</span>
+                    <span class="tag">深度防御</span>
+                    <ul>
+                        <li><strong>容器+虚拟机</strong>：Kata Containers</li>
+                        <li><strong>多重沙箱</strong>：层级隔离策略</li>
+                        <li><strong>动态切换</strong>：智能隔离选择</li>
+                        <li><strong>性能优化</strong>：资源使用平衡</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🤖 AI增强安全</h3>
+                    <span class="tag">机器学习</span>
+                    <span class="tag">智能检测</span>
+                    <ul>
+                        <li><strong>行为分析</strong>：异常行为识别</li>
+                        <li><strong>威胁预测</strong>：攻击模式预测</li>
+                        <li><strong>自适应防护</strong>：动态策略调整</li>
+                        <li><strong>自动化响应</strong>：智能事件处理</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>🔮 未来发展趋势</h3>
+                <ul>
+                    <li><strong>量子安全</strong>：抗量子密码学算法集成</li>
+                    <li><strong>边缘计算</strong>：分布式沙箱网络</li>
+                    <li><strong>5G/6G集成</strong>：超低延迟安全隔离</li>
+                    <li><strong>生物识别</strong>：多模态身份验证</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 6. 应用场景 -->
+        <div class="content-section" id="applications-section">
+            <h2 class="section-title">💡 应用场景</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🧪 开发测试环境</h3>
+                    <ul>
+                        <li><strong>CI/CD流水线</strong>：自动化测试隔离</li>
+                        <li><strong>A/B测试</strong>：功能分支验证</li>
+                        <li><strong>性能测试</strong>：负载测试环境</li>
+                        <li><strong>兼容性测试</strong>：多环境验证</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔍 安全分析平台</h3>
+                    <ul>
+                        <li><strong>恶意软件分析</strong>：动态行为分析</li>
+                        <li><strong>漏洞研究</strong>：0day挖掘</li>
+                        <li><strong>威胁狩猎</strong>：主动威胁发现</li>
+                        <li><strong>取证分析</strong>：数字证据提取</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>☁️ 生产环境部署</h3>
+                    <ul>
+                        <li><strong>容器编排</strong>：Kubernetes集群</li>
+                        <li><strong>微服务架构</strong>：服务间隔离</li>
+                        <li><strong>Serverless</strong>：函数计算平台</li>
+                        <li><strong>多租户系统</strong>：资源安全共享</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎓 教育培训</h3>
+                    <ul>
+                        <li><strong>网络安全实验</strong>：安全技能培训</li>
+                        <li><strong>编程教学</strong>：代码运行环境</li>
+                        <li><strong>竞赛平台</strong>：CTF比赛环境</li>
+                        <li><strong>模拟演练</strong>：应急响应训练</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>📈 应用场景统计</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">45%</div>
+                        <div class="stat-label">开发测试</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">30%</div>
+                        <div class="stat-label">安全分析</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">20%</div>
+                        <div class="stat-label">生产部署</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">5%</div>
+                        <div class="stat-label">教育培训</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px;">数据显示，Sandbox技术在软件开发测试领域应用最为广泛，占比接近一半，其次是网络安全分析和生产环境部署。</p>
+            </div>
+        </div>
+
+        <!-- 7. 总结 -->
+        <div class="content-section">
+            <h2 class="section-title">🎉 总结</h2>
+
+            <div class="highlight">
+                <h3>🌟 Sandbox 技术的核心价值</h3>
+                <p>Sandbox技术作为现代信息安全的重要基石，通过创建隔离的执行环境，有效防范了恶意代码的威胁，保护了系统和数据的安全。从简单的进程隔离到复杂的虚拟化技术，Sandbox已经成为软件开发、安全分析、云计算等领域不可或缺的技术手段。
+                </p>
+
+                <h3>🚀 技术发展方向</h3>
+                <ul>
+                    <li><strong>更强的隔离能力</strong>：硬件级别的安全保证</li>
+                    <li><strong>更低的性能开销</strong>：轻量化隔离技术</li>
+                    <li><strong>更智能的检测</strong>：AI驱动的安全分析</li>
+                    <li><strong>更广泛的应用</strong>：云原生和边缘计算集成</li>
+                </ul>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💪 核心优势</h3>
+                    <ul>
+                        <li>多层次安全防护</li>
+                        <li>灵活的部署方式</li>
+                        <li>丰富的实现技术</li>
+                        <li>广泛的应用场景</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎯 关键应用</h3>
+                    <ul>
+                        <li>恶意软件分析</li>
+                        <li>容器化部署</li>
+                        <li>浏览器安全</li>
+                        <li>云计算平台</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔮 发展前景</h3>
+                    <ul>
+                        <li>零信任架构普及</li>
+                        <li>边缘计算集成</li>
+                        <li>量子安全演进</li>
+                        <li>智能化管理</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        ↑
+    </button>
+
+    <script>
+        // 返回顶部功能
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // 监听滚动事件，显示/隐藏返回顶部按钮
+        window.addEventListener('scroll', function () {
+            const backToTopButton = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Sandbox 页面加载完成');
+
+            // 为思维导图分支添加点击事件
+            const branches = document.querySelectorAll('.branch');
+            console.log(`找到 ${branches.length} 个思维导图分支节点`);
+
+            branches.forEach((branch, index) => {
+                branch.addEventListener('click', function () {
+                    // 定义每个分支对应的章节ID
+                    const sectionIds = [
+                        'features-section',      // 🔒 核心特征
+                        'technology-section',    // 🏗️ 实现技术
+                        'detection-section',     // 🔍 检测方法
+                        'classification-section', // 📊 分类方式
+                        'evolution-section',     // 🚀 前沿演进
+                        'applications-section'   // 💡 应用场景
+                    ];
+
+                    const targetSectionId = sectionIds[index];
+                    const targetSection = document.getElementById(targetSectionId);
+
+                    console.log(`点击分支 ${index + 1}，目标章节ID: ${targetSectionId}`);
+
+                    if (targetSection) {
+                        console.log(`找到目标章节，开始跳转`);
+
+                        // 添加视觉反馈
+                        branch.style.transform = 'scale(1.15) translateY(-8px)';
+                        setTimeout(() => {
+                            branch.style.transform = '';
+                        }, 200);
+
+                        // 平滑滚动到目标章节
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+
+                        // 添加高亮效果
+                        targetSection.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.3)';
+                        setTimeout(() => {
+                            targetSection.style.boxShadow = '';
+                        }, 2000);
+                    } else {
+                        console.error(`未找到目标章节: ${targetSectionId}`);
+                    }
+                });
+
+                // 添加鼠标悬停提示
+                branch.setAttribute('title', `点击跳转到对应章节`);
+            });
+
+            // 为中心节点添加点击回到顶部功能
+            const centralNode = document.querySelector('.central-node');
+            if (centralNode) {
+                console.log('找到中心节点，添加点击事件');
+
+                centralNode.addEventListener('click', function () {
+                    console.log('点击中心节点，返回顶部');
+
+                    // 添加视觉反馈
+                    this.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+
+                    // 滚动到页面顶部
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // 添加鼠标悬停提示
+                centralNode.setAttribute('title', '点击回到页面顶部');
+                centralNode.style.cursor = 'pointer';
+            } else {
+                console.error('未找到中心节点');
+            }
+        });
+    </script>
+</body>
+
+</html>
